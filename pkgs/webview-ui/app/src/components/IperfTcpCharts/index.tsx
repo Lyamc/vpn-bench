@@ -25,6 +25,18 @@ export interface IperfTcpReportData {
       bytes?: number;
       seconds?: number;
     };
+    // Bidirectional reverse direction summaries (only present in --bidir tests)
+    sum_sent_bidir_reverse?: {
+      bits_per_second: number;
+      retransmits: number;
+      bytes?: number;
+      seconds?: number;
+    };
+    sum_received_bidir_reverse?: {
+      bits_per_second: number;
+      bytes?: number;
+      seconds?: number;
+    };
     cpu_utilization_percent: {
       host_total: number;
       remote_total: number;
@@ -391,16 +403,21 @@ export const IperfMaxSendWindowChart = (props: {
 
 // Helper function to calculate Min/Avg/Max throughput from intervals
 const getThroughputStats = (reportData: IperfTcpReportData) => {
+  const isBidir = reportData.start?.test_start?.bidir === 1;
+
   const avgSentMbps = reportData.end.sum_sent.bits_per_second / 1000000;
-  // Use sum_received for the overall average received rate as reported by iperf
-  const avgRecvMbps = reportData.end.sum_received.bits_per_second / 1000000;
+
+  // In bidir mode, end.sum_received is the forward direction's received confirmation.
+  // The actual reverse direction average is in end.sum_received_bidir_reverse.
+  const avgRecvMbps =
+    isBidir && reportData.end.sum_received_bidir_reverse
+      ? reportData.end.sum_received_bidir_reverse.bits_per_second / 1000000
+      : reportData.end.sum_received.bits_per_second / 1000000;
 
   let minSentMbps = avgSentMbps;
   let maxSentMbps = avgSentMbps;
   let minRecvMbps = avgRecvMbps;
   let maxRecvMbps = avgRecvMbps;
-
-  const isBidir = reportData.start?.test_start?.bidir === 1;
 
   if (reportData.intervals && reportData.intervals.length > 0) {
     const sentRates = reportData.intervals.map(
@@ -409,29 +426,17 @@ const getThroughputStats = (reportData: IperfTcpReportData) => {
     minSentMbps = Math.min(...sentRates);
     maxSentMbps = Math.max(...sentRates);
 
-    // For received rates, use sum_bidir_reverse if available (bidirectional test)
-    // Otherwise, if it was a reverse test (-R flag), the 'sum' would represent received data.
-    // For a standard *non-bidir*, *non-reverse* test, interval received data isn't typically in the client's JSON 'sum'.
-    // We rely on the provided JSON structure having sum_bidir_reverse for the received part in bidir tests.
+    // For bidir tests, interval recv rates come from sum_bidir_reverse
     if (isBidir && reportData.intervals.every((i) => i.sum_bidir_reverse)) {
       const recvRates = reportData.intervals.map((interval) => {
         if (interval.sum_bidir_reverse) {
-          return interval.sum_bidir_reverse.bits_per_second / 1000000; // Use non-null assertion as we checked
+          return interval.sum_bidir_reverse.bits_per_second / 1000000;
         } else {
           throw new Error("sum_bidir_reverse is missing in intervals");
         }
       });
       minRecvMbps = Math.min(...recvRates);
       maxRecvMbps = Math.max(...recvRates);
-    } else if (!isBidir /* && isReverseTest - need flag info */) {
-      // Handle calculation if it was a reverse-only test if needed
-      // For now, we'll stick to the average if interval data isn't clear for received
-      minRecvMbps = avgRecvMbps;
-      maxRecvMbps = avgRecvMbps;
-    } else {
-      // Default to average if not bidir with sum_bidir_reverse
-      minRecvMbps = avgRecvMbps;
-      maxRecvMbps = avgRecvMbps;
     }
   }
 

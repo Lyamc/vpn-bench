@@ -1,0 +1,37 @@
+{
+    "status": "success",
+    "data": {
+        "heatmap": {
+            "tc_profiles": [
+                "baseline"
+            ],
+            "throughput": {
+                "Mycelium": {}
+            },
+            "cpu": {
+                "Mycelium": {}
+            },
+            "failed": {
+                "Mycelium": [
+                    "baseline"
+                ]
+            }
+        },
+        "scatter": {
+            "dimensions": [
+                "throughput",
+                "payload_size",
+                "received_bytes_gb",
+                "vpn_index",
+                "profile_index"
+            ],
+            "vpn_names": [
+                "Mycelium"
+            ],
+            "tc_profiles": [
+                "baseline"
+            ],
+            "data": []
+        }
+    }
+}

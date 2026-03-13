@@ -1,0 +1,14 @@
+{
+    "status": "success",
+    "data": {
+        "heatmap": {
+            "tc_profiles": [
+                "baseline"
+            ],
+            "mean_seconds": {
+                "Mycelium": {}
+            },
+            "failed": {}
+        }
+    }
+}

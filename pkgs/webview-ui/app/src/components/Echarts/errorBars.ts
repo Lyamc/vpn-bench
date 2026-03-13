@@ -64,7 +64,8 @@ export function createErrorBarSeries(
       const min = api.value(1) as number;
       const max = api.value(2) as number;
 
-      const categoryWidth = (api.size!([1, 0]) as number[])[0];
+      const sizeResult = api.size?.([1, 0]) as number[] | undefined;
+      const categoryWidth = sizeResult?.[0] ?? 0;
 
       // Calculate x offset for grouped bars.
       // ECharts defaults: barCategoryGap ~20%, barGap ~30%.
@@ -78,8 +79,8 @@ export function createErrorBarSeries(
           -totalBarsWidth / 2 + barIndex * barWidth * 1.3 + barWidth / 2;
       }
 
-      const coordTop = api.coord!([categoryIndex, max]);
-      const coordBottom = api.coord!([categoryIndex, min]);
+      const coordTop = api.coord?.([categoryIndex, max]) ?? [0, 0];
+      const coordBottom = api.coord?.([categoryIndex, min]) ?? [0, 0];
 
       const x = coordTop[0] + xOffset;
       const yTop = coordTop[1];

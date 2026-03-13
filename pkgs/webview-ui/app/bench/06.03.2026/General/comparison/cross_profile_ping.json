@@ -1,0 +1,17 @@
+{
+    "status": "success",
+    "data": {
+        "heatmap": {
+            "tc_profiles": [
+                "baseline"
+            ],
+            "rtt": {
+                "Mycelium": {}
+            },
+            "packet_loss": {
+                "Mycelium": {}
+            },
+            "failed": {}
+        }
+    }
+}

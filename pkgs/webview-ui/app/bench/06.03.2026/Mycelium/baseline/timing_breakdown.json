@@ -1,0 +1,112 @@
+{
+  "vpn_name": "mycelium",
+  "total_duration_seconds": 776.7371923880055,
+  "start_timestamp": 1772827403.259749,
+  "end_timestamp": 1772828179.9969442,
+  "phases": [
+    {
+      "phase": "vpn_installation",
+      "duration_seconds": 238.72361873400223,
+      "start_timestamp": 1772827403.2597592,
+      "operations": [
+        {
+          "name": "nix_flake_update",
+          "duration_seconds": 1.7828684479973163,
+          "start_timestamp": 1772827403.2597668,
+          "success": true
+        },
+        {
+          "name": "create_base_inventory",
+          "duration_seconds": 28.806308441999136,
+          "start_timestamp": 1772827405.0426579,
+          "success": true
+        },
+        {
+          "name": "deploy_base_machines",
+          "duration_seconds": 48.48737805100245,
+          "start_timestamp": 1772827434.2585032,
+          "success": true
+        },
+        {
+          "name": "clean_state_dirs",
+          "duration_seconds": 2.9343375980024575,
+          "start_timestamp": 1772827482.7459044,
+          "success": true
+        },
+        {
+          "name": "install_mycelium_config",
+          "duration_seconds": 11.461648532000254,
+          "start_timestamp": 1772827485.6802754,
+          "success": true
+        },
+        {
+          "name": "get_vpn_ips",
+          "duration_seconds": 8.930724815996655,
+          "start_timestamp": 1772827500.8059764,
+          "success": true
+        },
+        {
+          "name": "install_nix_cache",
+          "duration_seconds": 0.04927917399618309,
+          "start_timestamp": 1772827509.736715,
+          "success": true
+        },
+        {
+          "name": "install_connection_timings_service",
+          "duration_seconds": 0.27584794200083707,
+          "start_timestamp": 1772827509.7860076,
+          "success": true
+        },
+        {
+          "name": "run_generators",
+          "duration_seconds": 8.928349271001935,
+          "start_timestamp": 1772827510.386846,
+          "success": true
+        },
+        {
+          "name": "deploy_vpn_machines",
+          "duration_seconds": 41.21061262299918,
+          "start_timestamp": 1772827519.3152041,
+          "success": true
+        },
+        {
+          "name": "initial_connection_timings",
+          "duration_seconds": 0.38196909799444256,
+          "start_timestamp": 1772827560.5258403,
+          "success": true
+        },
+        {
+          "name": "reboot_connection_timings",
+          "duration_seconds": 81.07552342700365,
+          "start_timestamp": 1772827560.90783,
+          "success": true
+        }
+      ]
+    },
+    {
+      "phase": "benchmarking",
+      "duration_seconds": 538.0132178200001,
+      "start_timestamp": 1772827641.9837098,
+      "operations": [
+        {
+          "name": "tc_stabilization",
+          "duration_seconds": 30.000356067997927,
+          "start_timestamp": 1772827642.459969,
+          "success": true
+        },
+        {
+          "name": "run_tests",
+          "duration_seconds": 507.0974092100005,
+          "start_timestamp": 1772827672.4603925,
+          "success": true,
+          "metadata": {
+            "profile": "baseline"
+          }
+        }
+      ],
+      "metadata": {
+        "profile": "baseline"
+      }
+    }
+  ]
+}

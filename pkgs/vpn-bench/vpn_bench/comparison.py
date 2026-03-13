@@ -863,15 +863,27 @@ def extract_tcp_iperf_metrics(data: dict[str, Any]) -> TcpIperfComparisonDict | 
 
         # Convert bits_per_second to Mbps
         sender_bps = sum_sent.get("bits_per_second", 0)
-        receiver_bps = sum_received.get("bits_per_second", 0)
         retransmits = sum_sent.get("retransmits", 0)
+
+        # In bidir mode, end.sum_received is the forward direction's received
+        # confirmation. The actual reverse direction throughput is in
+        # end.sum_received_bidir_reverse.
+        is_bidir = start.get("test_start", {}).get("bidir", 0) == 1
+        sum_received_bidir_reverse = end.get("sum_received_bidir_reverse", {})
+        if is_bidir and sum_received_bidir_reverse:
+            receiver_bps = sum_received_bidir_reverse.get("bits_per_second", 0)
+        else:
+            receiver_bps = sum_received.get("bits_per_second", 0)
 
         sender_mbps = sender_bps / 1_000_000
         receiver_mbps = receiver_bps / 1_000_000
 
         # Extract total bytes and duration
         bytes_sent = sum_sent.get("bytes", 0)
-        bytes_received = sum_received.get("bytes", 0)
+        if is_bidir and sum_received_bidir_reverse:
+            bytes_received = sum_received_bidir_reverse.get("bytes", 0)
+        else:
+            bytes_received = sum_received.get("bytes", 0)
         duration_seconds = sum_sent.get("seconds", 0)
 
         # Extract max window sizes from streams (sender stream has window data)
@@ -1203,10 +1215,16 @@ def extract_parallel_tcp_metrics(
             retransmits = sum_sent.get("retransmits", 0)
             bytes_sent = sum_sent.get("bytes", 0)
 
-            # Get receiver stats from sum_received
+            # Get receiver stats - in bidir mode, use reverse direction data
             sum_received = end.get("sum_received", {})
-            receiver_bps = sum_received.get("bits_per_second", 0)
-            bytes_received = sum_received.get("bytes", 0)
+            is_bidir = start.get("test_start", {}).get("bidir", 0) == 1
+            sum_received_bidir_reverse = end.get("sum_received_bidir_reverse", {})
+            if is_bidir and sum_received_bidir_reverse:
+                receiver_bps = sum_received_bidir_reverse.get("bits_per_second", 0)
+                bytes_received = sum_received_bidir_reverse.get("bytes", 0)
+            else:
+                receiver_bps = sum_received.get("bits_per_second", 0)
+                bytes_received = sum_received.get("bytes", 0)
 
             # Get duration and MSS from first successful pair (all pairs run same duration)
             if successful_pairs == 0:
