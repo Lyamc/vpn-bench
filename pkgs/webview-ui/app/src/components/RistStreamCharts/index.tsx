@@ -2,6 +2,7 @@ import { Component, Show } from "solid-js";
 /* eslint-disable  @typescript-eslint/no-explicit-any */
 
 import { Echart } from "../Echarts";
+import { formatAxisValue } from "../Echarts/formatters";
 import * as echarts from "echarts";
 
 interface RistPercentiles {
@@ -331,7 +332,7 @@ const createEncodingBoxplotOption = (
       splitArea: { show: false },
       splitLine: { lineStyle: { type: "dashed", color: "#eee" } },
       axisLabel: {
-        formatter: (value: number) => value.toFixed(2),
+        formatter: formatAxisValue,
         fontSize: 11,
       },
     },
@@ -450,7 +451,7 @@ const createEncodingBarChartOption = (
       nameTextStyle: { fontWeight: "bold", fontSize: 13 },
       min: 0,
       axisLabel: {
-        formatter: (value: number) => value.toFixed(2),
+        formatter: formatAxisValue,
         fontSize: 11,
       },
       splitLine: { lineStyle: { type: "dashed", color: "#eee" } },
@@ -630,7 +631,7 @@ const createNetworkBoxplotOption = (
       splitArea: { show: false },
       splitLine: { lineStyle: { type: "dashed", color: "#eee" } },
       axisLabel: {
-        formatter: (value: number) => value.toFixed(2),
+        formatter: formatAxisValue,
         fontSize: 11,
       },
     },
@@ -759,7 +760,7 @@ const createNetworkBarChartOption = (
       nameTextStyle: { fontWeight: "bold", fontSize: 13 },
       min: 0,
       axisLabel: {
-        formatter: (value: number) => value.toFixed(2),
+        formatter: formatAxisValue,
         fontSize: 11,
       },
       splitLine: { lineStyle: { type: "dashed", color: "#eee" } },

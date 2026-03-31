@@ -1,5 +1,6 @@
 import { Echart } from "../Echarts"; // Assuming Echart component handles rendering
 import { createErrorBarSeries } from "../Echarts/errorBars";
+import { formatAxisValue } from "../Echarts/formatters";
 /* eslint-disable  @typescript-eslint/no-explicit-any */
 
 // Define interfaces for UDP reports based on provided JSON
@@ -481,7 +482,7 @@ const createUdpThroughputOption = (
         );
         return Math.ceil(Math.max(value.max, errorMax) * 1.1);
       },
-      axisLabel: { formatter: "{value}" },
+      axisLabel: { formatter: formatAxisValue },
       nameTextStyle: {
         align: "left",
       },
@@ -613,6 +614,7 @@ const createPacketLossOption = (
       name: "Packet Loss (%)",
       max: 100,
       min: 0,
+      axisLabel: { formatter: formatAxisValue },
       nameTextStyle: { align: "left" },
     },
     series: [
@@ -703,7 +705,7 @@ const createJitterOption = (
     yAxis: {
       type: "value",
       name: "Jitter (ms)",
-      axisLabel: { formatter: "{value} ms" },
+      axisLabel: { formatter: formatAxisValue },
       nameTextStyle: { align: "left" },
     },
     series: [
@@ -801,6 +803,7 @@ const createUdpCpuOption = (
       name: "Percentage (%)",
       max: (value) => Math.max(100, Math.ceil(value.max / 20) * 20), // Adjust max dynamically but ensure at least 100
       min: 0,
+      axisLabel: { formatter: formatAxisValue },
       nameTextStyle: { align: "left" },
     },
     series: [
@@ -1032,7 +1035,7 @@ const createUdpTimeSeriesOption = (
         name: "Throughput (Mbps)",
         position: "left",
         axisLine: { show: true, lineStyle: { color: colorPalette[0] } }, // Match first throughput color
-        axisLabel: { formatter: "{value}" },
+        axisLabel: { formatter: formatAxisValue },
         nameTextStyle: { align: "left" },
         min: 0, // Ensure throughput starts at 0
       },
@@ -1041,7 +1044,7 @@ const createUdpTimeSeriesOption = (
         name: "Loss (%) / Jitter (ms)",
         position: "right",
         axisLine: { show: true, lineStyle: { color: colorPalette[1] } }, // Match first loss color
-        axisLabel: { formatter: "{value}" },
+        axisLabel: { formatter: formatAxisValue },
         nameTextStyle: { align: "right" },
         min: 0, // Ensure loss/jitter starts at 0
         splitLine: { show: false }, // Avoid splitting lines from both axes overlapping

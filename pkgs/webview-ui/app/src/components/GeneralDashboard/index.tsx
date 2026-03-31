@@ -1,4 +1,5 @@
 import { Echart } from "../Echarts";
+import { formatAxisValue } from "../Echarts/formatters";
 import { Show, createSignal, createEffect, createMemo, For } from "solid-js";
 import { ComparisonData, TCSettingsData } from "@/src/benchData";
 import { sortTcProfiles } from "@/src/index";
@@ -164,9 +165,7 @@ const createConnectionTimingsOption = (
       nameLocation: "middle",
       nameGap: 50,
       axisLabel: {
-        formatter: function (value: number) {
-          return (value / 1000).toFixed(1) + "s";
-        },
+        formatter: (value: number) => formatAxisValue(value / 1000) + "s",
       },
     },
     series: [

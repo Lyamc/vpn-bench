@@ -1,5 +1,6 @@
 import { Echart } from "../Echarts";
 import { createErrorBarSeries } from "../Echarts/errorBars";
+import { formatAxisValue } from "../Echarts/formatters";
 
 // Define interfaces for typing
 export interface IperfTcpReportData {
@@ -236,6 +237,7 @@ const createRttOption = (reports: IperfTcpReport[]) => {
     yAxis: {
       type: "value",
       name: "RTT (ms)",
+      axisLabel: { formatter: formatAxisValue },
       max: (value: { max: number }) => {
         const errorMax = Math.max(...rttData.map((d) => d.max), 0);
         return Math.max(value.max, errorMax) * 1.1 || undefined;
@@ -542,7 +544,7 @@ const createThroughputOption = (reports: IperfTcpReport[]) => {
         return Math.ceil(Math.max(value.max, errorMax) * 1.1);
       },
       axisLabel: {
-        formatter: "{value}", // Keep simple number format for Mbps
+        formatter: formatAxisValue,
       },
     },
     series: [
@@ -633,6 +635,7 @@ const createCpuOption = (reports: IperfTcpReport[]) => {
       type: "value",
       name: "Percentage (%)",
       max: 100,
+      axisLabel: { formatter: formatAxisValue },
     },
     series: [
       {
@@ -700,6 +703,7 @@ const createRetransmitsOption = (reports: IperfTcpReport[]) => {
     yAxis: {
       type: "value",
       name: "Count",
+      axisLabel: { formatter: formatAxisValue },
     },
     series: [
       {
@@ -813,6 +817,7 @@ const createTimeSeriesOption = (reports: IperfTcpReport[]) => {
     yAxis: {
       type: "value",
       name: "Throughput (Mbps)",
+      axisLabel: { formatter: formatAxisValue },
     },
     series: seriesData,
   };

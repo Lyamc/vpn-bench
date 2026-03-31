@@ -1,5 +1,6 @@
 import { Show } from "solid-js";
 import { Echart } from "../Echarts";
+import { formatAxisValue } from "../Echarts/formatters";
 
 const colorPalette = [
   "#3498db",
@@ -107,7 +108,7 @@ const createMeanTimeOption = (reports: HyperfineReport[], title?: string) => {
       min: 0, // Always start from 0
 
       axisLabel: {
-        formatter: "{value}s",
+        formatter: (value: number) => formatAxisValue(value) + "s",
       },
       splitLine: {
         show: true,
@@ -196,6 +197,7 @@ const createTimeSeriesOption = (reports: HyperfineReport[], title?: string) => {
       type: "value",
       name: "Time (seconds)",
       min: 0, // Always start from 0
+      axisLabel: { formatter: formatAxisValue },
     },
     series: reports.map((report, idx) => ({
       name: originalNames[idx],

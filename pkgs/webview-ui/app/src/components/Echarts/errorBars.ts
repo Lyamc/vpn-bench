@@ -127,13 +127,16 @@ export function createErrorBarSeries(
           children.push({
             type: "text",
             x: x,
-            y: yTop - 6,
+            y: yTop - 14,
             style: {
               text: labelText,
               textAlign: "center",
               textVerticalAlign: "bottom",
               fill: labels.color ?? "#555",
               fontSize: labels.fontSize ?? 10,
+              textBackgroundColor: "rgba(255, 255, 255, 0.8)",
+              textBorderRadius: 2,
+              textPadding: [2, 4],
             },
           });
         }

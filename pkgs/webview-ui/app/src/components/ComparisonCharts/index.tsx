@@ -1,5 +1,6 @@
 import { Echart } from "../Echarts";
 import { createErrorBarSeries } from "../Echarts/errorBars";
+import { formatAxisValue } from "../Echarts/formatters";
 import { Show } from "solid-js";
 import {
   MetricStats,
@@ -167,6 +168,9 @@ const createBarChartOption = (
       name: yAxisLabel,
       nameLocation: "middle",
       nameGap: 50,
+      axisLabel: {
+        formatter: formatAxisValue,
+      },
       max: (value: { max: number }) => {
         const errorMax = Math.max(
           ...sortedData.filter((d) => !d.isIncomplete).map((d) => d.max),
@@ -564,6 +568,9 @@ const createDualBarChartOption = (
       name: yAxisLabel,
       nameLocation: "middle",
       nameGap: 50,
+      axisLabel: {
+        formatter: formatAxisValue,
+      },
       max: (value: { max: number }) => {
         const errorMax = Math.max(
           ...sortedData
@@ -1845,6 +1852,7 @@ export const TestDurationComparisonChart = (props: {
       yAxis: {
         type: "value",
         name: "Duration (seconds)",
+        axisLabel: { formatter: formatAxisValue },
       },
       series,
     };
@@ -1937,6 +1945,7 @@ export const SuccessRateComparisonChart = (props: {
         nameGap: 40,
         min: 0,
         max: 100,
+        axisLabel: { formatter: formatAxisValue },
       },
       series: [
         {
@@ -2024,6 +2033,7 @@ export const FailureCountComparisonChart = (props: {
       yAxis: {
         type: "value",
         name: "Number of Tests",
+        axisLabel: { formatter: formatAxisValue },
       },
       series: [
         {
@@ -2251,6 +2261,7 @@ export const RetryComparisonChart = (props: {
         type: "value",
         name: "Number of Retries",
         minInterval: 1,
+        axisLabel: { formatter: formatAxisValue },
       },
       series,
     };

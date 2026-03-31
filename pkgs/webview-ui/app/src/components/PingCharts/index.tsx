@@ -1,6 +1,7 @@
 import { Show } from "solid-js";
 import { Echart } from "../Echarts";
 import { createErrorBarSeries } from "../Echarts/errorBars";
+import { formatAxisValue } from "../Echarts/formatters";
 
 // Define interfaces for typing
 interface MetricStats {
@@ -100,6 +101,7 @@ const createRttBarOption = (reports: PingReport[]) => {
     yAxis: {
       type: "value",
       name: "RTT (ms)",
+      axisLabel: { formatter: formatAxisValue },
       max: (value: { max: number }) => {
         const errorMax = Math.max(...rttData.map((d) => d.max), 0);
         return Math.max(value.max, errorMax) * 1.1 || undefined;
@@ -187,6 +189,7 @@ const createRttMetricsOption = (reports: PingReport[]) => {
     yAxis: {
       type: "value",
       name: "RTT (ms)",
+      axisLabel: { formatter: formatAxisValue },
     },
     series: [
       {
@@ -269,6 +272,7 @@ const createPacketLossOption = (reports: PingReport[]) => {
       type: "value",
       name: "Packet Loss (%)",
       min: 0,
+      axisLabel: { formatter: formatAxisValue },
     },
     series: [
       {
@@ -351,6 +355,7 @@ const createJitterOption = (reports: PingReport[]) => {
     yAxis: {
       type: "value",
       name: "Jitter (ms)",
+      axisLabel: { formatter: formatAxisValue },
     },
     series: [
       {

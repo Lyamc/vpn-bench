@@ -3,6 +3,7 @@ import { Component, Show } from "solid-js";
 
 // Assuming Echart component is correctly imported and works with echarts options
 import { Echart } from "../Echarts";
+import { formatAxisValue } from "../Echarts/formatters";
 import * as echarts from "echarts";
 import { MixedReport, getErrorMessage, Err, Ok } from "@/src/benchData";
 import { ErrorDetailsPanel } from "../ErrorDetailsPanel";
@@ -338,8 +339,7 @@ const createQperfBoxplotOption = (
       splitArea: { show: false }, // Cleaner background
       splitLine: { lineStyle: { type: "dashed", color: "#eee" } }, // Subtle split lines
       axisLabel: {
-        formatter: (value: number) =>
-          value.toFixed(metric === "cpu_usage_percent" ? 1 : 2), // Less decimals for CPU %
+        formatter: formatAxisValue, // Less decimals for CPU %
         fontSize: 11,
       },
     },
@@ -462,8 +462,7 @@ const createQperfBarChartOption = (
       min: 0,
       max: metric === "cpu_usage_percent" ? 100 : undefined, // Keep max 100 for CPU
       axisLabel: {
-        formatter: (value: number) =>
-          value.toFixed(metric === "cpu_usage_percent" ? 1 : 2),
+        formatter: formatAxisValue,
         fontSize: 11,
       },
       splitLine: { lineStyle: { type: "dashed", color: "#eee" } },
@@ -632,8 +631,7 @@ const createMixedBarChartOption = (
       min: 0,
       max: metric === "cpu_usage_percent" ? 100 : undefined,
       axisLabel: {
-        formatter: (value: number) =>
-          value.toFixed(metric === "cpu_usage_percent" ? 1 : 2),
+        formatter: formatAxisValue,
         fontSize: 11,
       },
       splitLine: { lineStyle: { type: "dashed", color: "#eee" } },
