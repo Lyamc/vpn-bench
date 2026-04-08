@@ -127,7 +127,7 @@ export function createErrorBarSeries(
           children.push({
             type: "text",
             x: x,
-            y: yTop - 14,
+            y: yTop - 4,
             style: {
               text: labelText,
               textAlign: "center",

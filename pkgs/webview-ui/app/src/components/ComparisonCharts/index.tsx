@@ -595,24 +595,22 @@ const createDualBarChartOption = (
                 borderColor: d.isCrashed ? "#d32f2f" : "#9e9e9e",
                 borderWidth: 2,
               },
+              label: {
+                show: true,
+                position: "top",
+                formatter: d.isCrashed ? "⚠️" : "N/A",
+                fontSize: d.isCrashed ? 14 : 11,
+                color: d.isCrashed ? undefined : "#666",
+                fontWeight: d.isCrashed ? undefined : ("bold" as const),
+              },
             };
           }
           return {
             value: d.senderValue,
             itemStyle: { color: firstColor },
+            label: { show: false },
           };
         }),
-        label: {
-          show: true,
-          position: "top",
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          formatter: (params: any) => {
-            const item = sortedData[params.dataIndex];
-            if (item.isIncomplete) return item.isCrashed ? "⚠️" : "N/A";
-            return labelFormatter(params.value);
-          },
-          fontSize: 10,
-        },
       },
       {
         name: secondLabel,
@@ -627,36 +625,43 @@ const createDualBarChartOption = (
                 borderColor: d.isCrashed ? "#d32f2f" : "#9e9e9e",
                 borderWidth: 2,
               },
+              label: { show: false },
             };
           }
           return {
             value: d.receiverValue,
             itemStyle: { color: secondColor },
+            label: { show: false },
           };
         }),
-        label: {
-          show: true,
-          position: "top",
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          formatter: (params: any) => {
-            const item = sortedData[params.dataIndex];
-            if (item.isIncomplete) return "";
-            return labelFormatter(params.value);
-          },
-          fontSize: 10,
-        },
       },
       createErrorBarSeries(
         sortedData.map((d) =>
           d.isIncomplete ? null : { min: d.senderMin, max: d.senderMax },
         ),
-        { barIndex: 0, totalBars: 2 },
+        {
+          barIndex: 0,
+          totalBars: 2,
+          labels: {
+            values: sortedData.map((d) =>
+              d.isIncomplete ? null : labelFormatter(d.senderValue),
+            ),
+          },
+        },
       ),
       createErrorBarSeries(
         sortedData.map((d) =>
           d.isIncomplete ? null : { min: d.receiverMin, max: d.receiverMax },
         ),
-        { barIndex: 1, totalBars: 2 },
+        {
+          barIndex: 1,
+          totalBars: 2,
+          labels: {
+            values: sortedData.map((d) =>
+              d.isIncomplete ? null : labelFormatter(d.receiverValue),
+            ),
+          },
+        },
       ),
     ],
   };
