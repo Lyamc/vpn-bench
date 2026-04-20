@@ -100,6 +100,8 @@ class TcpIperfComparisonDict(TypedDict):
     total_bytes_sent: MetricStatsDict  # Total bytes sent during test
     total_bytes_received: MetricStatsDict  # Total bytes received during test
     duration_seconds: MetricStatsDict  # Test duration in seconds
+    host_cpu_percent: MetricStatsDict  # Host CPU utilization
+    remote_cpu_percent: MetricStatsDict  # Remote CPU utilization
 
 
 class UdpIperfComparisonDict(TypedDict):
@@ -899,6 +901,11 @@ def extract_tcp_iperf_metrics(data: dict[str, Any]) -> TcpIperfComparisonDict | 
         # Calculate retransmit percentage using actual MSS from iperf3
         retransmit_pct = calculate_retransmit_percent(retransmits, bytes_sent, tcp_mss)
 
+        # Extract CPU utilization
+        cpu_util = end.get("cpu_utilization_percent", {})
+        host_cpu = cpu_util.get("host_total", 0)
+        remote_cpu = cpu_util.get("remote_total", 0)
+
         # Create MetricStatsDict for single values
         def single_value_stats(value: float) -> MetricStatsDict:
             return {
@@ -918,6 +925,8 @@ def extract_tcp_iperf_metrics(data: dict[str, Any]) -> TcpIperfComparisonDict | 
             "total_bytes_sent": single_value_stats(float(bytes_sent)),
             "total_bytes_received": single_value_stats(float(bytes_received)),
             "duration_seconds": single_value_stats(float(duration_seconds)),
+            "host_cpu_percent": single_value_stats(float(host_cpu)),
+            "remote_cpu_percent": single_value_stats(float(remote_cpu)),
         }
     except (KeyError, TypeError) as e:
         log.warning(f"Failed to extract TCP iperf metrics: {e}")
@@ -973,6 +982,12 @@ def aggregate_tcp_iperf_data(
         ),
         "duration_seconds": aggregate_metric_stats(
             [m["duration_seconds"] for m in metrics_list]
+        ),
+        "host_cpu_percent": aggregate_metric_stats(
+            [m["host_cpu_percent"] for m in metrics_list]
+        ),
+        "remote_cpu_percent": aggregate_metric_stats(
+            [m["remote_cpu_percent"] for m in metrics_list]
         ),
     }
 

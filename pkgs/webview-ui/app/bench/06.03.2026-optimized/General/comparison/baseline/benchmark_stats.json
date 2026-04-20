@@ -1,92 +1,6 @@
 {
     "status": "success",
     "data": {
-        "Internal": {
-            "status": "success",
-            "data": {
-                "tcp_test_duration_seconds": {
-                    "min": 30.81735134124756,
-                    "average": 30.97065567970276,
-                    "max": 31.049962520599365,
-                    "percentiles": {
-                        "p25": 30.81735134124756,
-                        "p50": 31.044653177261353,
-                        "p75": 31.044653177261353
-                    }
-                },
-                "udp_test_duration_seconds": {
-                    "min": 31.082895755767822,
-                    "average": 31.097044547398884,
-                    "max": 31.107672452926636,
-                    "percentiles": {
-                        "p25": 31.082895755767822,
-                        "p50": 31.100565433502197,
-                        "p75": 31.100565433502197
-                    }
-                },
-                "parallel_tcp_test_duration_seconds": {
-                    "min": 0.0,
-                    "average": 0.0,
-                    "max": 0.0,
-                    "percentiles": {
-                        "p25": 0.0,
-                        "p50": 0.0,
-                        "p75": 0.0
-                    }
-                },
-                "ping_test_duration_seconds": {
-                    "min": 62.76538276672363,
-                    "average": 62.816354751586914,
-                    "max": 62.88090133666992,
-                    "percentiles": {
-                        "p25": 62.76538276672363,
-                        "p50": 62.80278015136719,
-                        "p75": 62.80278015136719
-                    }
-                },
-                "qperf_test_duration_seconds": {
-                    "min": 31.53132963180542,
-                    "average": 31.582885265350342,
-                    "max": 31.66643762588501,
-                    "percentiles": {
-                        "p25": 31.53132963180542,
-                        "p50": 31.550888538360596,
-                        "p75": 31.550888538360596
-                    }
-                },
-                "video_test_duration_seconds": {
-                    "min": 33.04022264480591,
-                    "average": 33.42566068967184,
-                    "max": 33.950451612472534,
-                    "percentiles": {
-                        "p25": 33.04022264480591,
-                        "p50": 33.28630781173706,
-                        "p75": 33.28630781173706
-                    }
-                },
-                "nix_cache_test_duration_seconds": {
-                    "min": 29.439640760421753,
-                    "average": 43.50481335322062,
-                    "max": 68.31633496284485,
-                    "percentiles": {
-                        "p25": 29.439640760421753,
-                        "p50": 32.758464336395264,
-                        "p75": 32.758464336395264
-                    }
-                },
-                "tcp_retries": 0,
-                "udp_retries": 0,
-                "parallel_tcp_retries": 0,
-                "ping_retries": 0,
-                "qperf_retries": 0,
-                "video_retries": 0,
-                "nix_cache_retries": 0,
-                "total_tests": 7,
-                "successful_tests": 7,
-                "failed_tests": 0,
-                "success_rate_percent": 100.0
-            }
-        },
         "Headscale": {
             "status": "success",
             "data": {
@@ -171,6 +85,92 @@
                 "successful_tests": 6,
                 "failed_tests": 1,
                 "success_rate_percent": 85.71428571428571
+            }
+        },
+        "Internal": {
+            "status": "success",
+            "data": {
+                "tcp_test_duration_seconds": {
+                    "min": 30.81735134124756,
+                    "average": 30.97065567970276,
+                    "max": 31.049962520599365,
+                    "percentiles": {
+                        "p25": 30.81735134124756,
+                        "p50": 31.044653177261353,
+                        "p75": 31.044653177261353
+                    }
+                },
+                "udp_test_duration_seconds": {
+                    "min": 31.082895755767822,
+                    "average": 31.097044547398884,
+                    "max": 31.107672452926636,
+                    "percentiles": {
+                        "p25": 31.082895755767822,
+                        "p50": 31.100565433502197,
+                        "p75": 31.100565433502197
+                    }
+                },
+                "parallel_tcp_test_duration_seconds": {
+                    "min": 0.0,
+                    "average": 0.0,
+                    "max": 0.0,
+                    "percentiles": {
+                        "p25": 0.0,
+                        "p50": 0.0,
+                        "p75": 0.0
+                    }
+                },
+                "ping_test_duration_seconds": {
+                    "min": 62.76538276672363,
+                    "average": 62.816354751586914,
+                    "max": 62.88090133666992,
+                    "percentiles": {
+                        "p25": 62.76538276672363,
+                        "p50": 62.80278015136719,
+                        "p75": 62.80278015136719
+                    }
+                },
+                "qperf_test_duration_seconds": {
+                    "min": 31.53132963180542,
+                    "average": 31.582885265350342,
+                    "max": 31.66643762588501,
+                    "percentiles": {
+                        "p25": 31.53132963180542,
+                        "p50": 31.550888538360596,
+                        "p75": 31.550888538360596
+                    }
+                },
+                "video_test_duration_seconds": {
+                    "min": 33.04022264480591,
+                    "average": 33.42566068967184,
+                    "max": 33.950451612472534,
+                    "percentiles": {
+                        "p25": 33.04022264480591,
+                        "p50": 33.28630781173706,
+                        "p75": 33.28630781173706
+                    }
+                },
+                "nix_cache_test_duration_seconds": {
+                    "min": 29.439640760421753,
+                    "average": 43.50481335322062,
+                    "max": 68.31633496284485,
+                    "percentiles": {
+                        "p25": 29.439640760421753,
+                        "p50": 32.758464336395264,
+                        "p75": 32.758464336395264
+                    }
+                },
+                "tcp_retries": 0,
+                "udp_retries": 0,
+                "parallel_tcp_retries": 0,
+                "ping_retries": 0,
+                "qperf_retries": 0,
+                "video_retries": 0,
+                "nix_cache_retries": 0,
+                "total_tests": 7,
+                "successful_tests": 7,
+                "failed_tests": 0,
+                "success_rate_percent": 100.0
             }
         }
     }

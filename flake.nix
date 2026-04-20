@@ -12,6 +12,8 @@
   inputs.hyprspace.url = "github:hyprspace/hyprspace";
   inputs.hyprspace.inputs.flake-parts.follows = "flake-parts";
   inputs.hyprspace.inputs.nixpkgs.follows = "nixpkgs";
+  inputs.tincr.url = "github:mic92/tincr";
+  inputs.tincr.inputs.nixpkgs.follows = "nixpkgs";
   inputs.easytier.url = "github:EasyTier/EasyTier";
   inputs.nebula = {
     url = "github:slackhq/nebula";

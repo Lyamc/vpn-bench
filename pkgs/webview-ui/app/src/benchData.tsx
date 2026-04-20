@@ -272,6 +272,8 @@ export interface TcpIperfComparisonData {
   total_bytes_sent: MetricStats;
   total_bytes_received: MetricStats;
   duration_seconds: MetricStats;
+  host_cpu_percent: MetricStats;
+  remote_cpu_percent: MetricStats;
 }
 
 export interface UdpIperfComparisonData {

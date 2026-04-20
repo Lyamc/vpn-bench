@@ -783,6 +783,33 @@ export const TcpWindowSizeComparisonChart = (props: {
   );
 };
 
+export const TcpCpuComparisonChart = (props: {
+  data: VpnComparisonResultMap<TcpIperfComparisonData>;
+  height?: number;
+  allVpnNames?: string[];
+}) => {
+  const chartData = () =>
+    metricsToDualBarData(
+      props.data,
+      (d) => d.host_cpu_percent,
+      (d) => d.remote_cpu_percent,
+      props.allVpnNames,
+    );
+  return (
+    <DualComparisonBarChart
+      data={chartData()}
+      title="TCP CPU Utilization"
+      yAxisLabel="CPU Utilization (%)"
+      height={props.height ?? 400}
+      firstColor="#e74c3c"
+      secondColor="#3498db"
+      firstLabel="Host"
+      secondLabel="Remote"
+      labelFormatter={(v) => v.toFixed(1) + "%"}
+    />
+  );
+};
+
 export const TcpTotalDataComparisonChart = (props: {
   data: VpnComparisonResultMap<TcpIperfComparisonData>;
   height?: number;
@@ -1275,6 +1302,10 @@ export const TcpComparisonSection = (props: {
         allVpnNames={props.allVpnNames}
       />
       <TcpWindowSizeComparisonChart
+        data={props.data}
+        allVpnNames={props.allVpnNames}
+      />
+      <TcpCpuComparisonChart
         data={props.data}
         allVpnNames={props.allVpnNames}
       />

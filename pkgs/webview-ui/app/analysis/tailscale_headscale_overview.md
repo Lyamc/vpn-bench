@@ -71,7 +71,6 @@ All actual VPN traffic uses **WireGuard** protocol:
 - **UDP**: Primary transport for WireGuard tunnels
 - **TCP**: Via DERP relay servers (WireGuard packets encapsulated in TCP)
 - **WebSocket**: DERP supports WebSocket for restrictive firewalls
-- **QUIC**: Supported for DERP connections, but requires ~1350 byte MTU (often fails on constrained networks)
 - **IPv4**: Full support for both control and data plane
 - **IPv6**: Full support for both control and data plane
 
@@ -80,7 +79,7 @@ All actual VPN traffic uses **WireGuard** protocol:
 ### Transport
 - [x] **UDP transport** - Primary WireGuard transport protocol
 - [x] **TCP fallback** - Works through restrictive firewalls via DERP relay over TCP
-- [x] **QUIC support** - DERP-over-QUIC supported (requires adequate MTU ~1350 bytes)
+- [ ] **QUIC support** - No QUIC transport in DERP (not implemented in codebase)
 - [x] **WebSocket support** - DERP relay supports WebSocket for HTTP-compatible tunneling
 
 ### IP Support
@@ -122,9 +121,9 @@ The Noise Protocol Framework secures all communication between Tailscale clients
    - Constant-time comparison to prevent timing attacks
 
 2. **NodeKey** (Curve25519):
-   - Session key for WireGuard tunnels
+   - Key for WireGuard tunnels, persisted to disk (not ephemeral/per-session)
    - Distributed to peers via control server
-   - Can be rotated independently of MachineKey
+   - Can be manually rotated independently of MachineKey
    - Used for peer-to-peer WireGuard encryption
 
 3. **DiscoKey** (Curve25519):
@@ -220,7 +219,7 @@ The control server is designed for multi-core scalability:
 
 ### Threading
 - [x] **Multi-threaded processing** - Go goroutines provide parallel packet handling across CPU cores
-- [x] **Per-core packet queues** - wireguard-go uses per-peer queues to reduce lock contention
+- [x] **Per-peer packet queues** - wireguard-go uses per-peer queues to reduce lock contention
 
 ### Packet I/O
 - [x] **Batch UDP receives** - Uses `recvmmsg` on Linux for receiving multiple packets per syscall
@@ -238,8 +237,8 @@ The control server is designed for multi-core scalability:
 ### Userspace TCP Stack (optional)
 - [x] **Userspace TCP implementation** - gVisor netstack for tunneled traffic (optional, not all deployments)
 - [x] **Large TCP RX/TX buffers** - 8 MB RX / 6 MB TX buffers in netstack (vs ~128 KB kernel default)
-- [x] **Tuned congestion control** - Reno over CUBIC, RACK disabled to prevent spurious retransmits under reordering
-- [x] **Reordering tolerance** - Handles 5%+ packet reordering without spurious retransmits
+- [x] **Tuned congestion control** - Reno set explicitly (gVisor has int overflow bug with CUBIC); RACK disabled (gVisor's RACK implementation handles ACKs poorly, causing spurious retransmits)
+- [x] **Reordering tolerance** - Large buffers and disabled RACK reduce spurious retransmits under reordering
 
 ### Receive Path
 - [x] **TCP/packet coalescing on ingress** - GRO coalesces TCP segments before processing
@@ -273,7 +272,7 @@ Under adverse network conditions (5% reordering, 2% packet loss), Tailscale achi
 1. **128-packet batching** (+50%): Reduces syscall overhead
 2. **7 MB socket buffers** (+100%): Absorbs reordering before TCP sees it
 3. **8 MB TCP buffers + SACK** (+80%): Prevents window collapse
-4. **RACK disabled + Reno CC** (+40%): Prevents false retransmit
+4. **RACK disabled + Reno CC** (+40%): Works around gVisor RACK/CUBIC implementation bugs that cause spurious retransmits
 5. **GSO/GRO** (+20%): Reduced CPU overhead
 6. **Combined Effect**: 9 Mbps → 41 Mbps (+355%)
 
@@ -293,7 +292,7 @@ The userspace gVisor TCP stack with aggressive tuning absorbs packet loss/reorde
    - Curve25519 for all key operations
    - Constant-time comparison prevents timing attacks
    - Machine key never sent to peers (only to control server)
-   - Separate identity keys (MachineKey) from session keys (NodeKey)
+   - Separate identity keys (MachineKey) from WireGuard keys (NodeKey)
 
 3. **Protocol Security**:
    - Early Noise payload with challenge prevents server spoofing
@@ -309,7 +308,7 @@ The userspace gVisor TCP stack with aggressive tuning absorbs packet loss/reorde
 5. **Authentication**:
    - PKCE support for OAuth/OIDC
    - Machine key verification
-   - Per-session node keys
+   - Persistent node keys (rotatable)
    - Email verification for OIDC (configurable)
    - Node expiry enforcement (nodes cannot extend their own expiry)
 
@@ -342,7 +341,7 @@ No severe publicly disclosed CVEs for Tailscale client or Headscale at the time 
    - Compromised control server = compromised network
 
 4. **DNS Privacy**:
-   - MagicDNS queries go through Tailscale infrastructure (encrypted but visible to control server)
+   - MagicDNS queries visible to whoever operates the control server (Tailscale Inc. for cloud, self for Headscale)
    - Server sees query patterns
 
 5. **Endpoint Selection**:
@@ -492,7 +491,8 @@ Once local peers are identified:
 - **Path Selection**: Prioritizes:
   1. Direct local LAN IPv4/IPv6 (lowest latency)
   2. Direct WAN IPv4/IPv6 (medium latency)
-  3. DERP relay (fallback)
+  3. UDP relay via Geneve encapsulation (experimental, lower preference than direct)
+  4. DERP relay (fallback)
 - **Encryption Still Required**: **All LAN traffic is still WireGuard-encrypted** - no trusted path mode
 - **No LAN-Only Mode**: Cannot restrict to local network only (always connects to control server)
 
@@ -626,7 +626,7 @@ The combined Tailscale/Headscale system supports multiple authentication methods
 - **Full OAuth2/OIDC Flow**: Standards-compliant SSO integration
 - **PKCE Support**: Both S256 and plain methods for secure public clients
 - **Domain Filtering**: Restrict by email domain (e.g., @company.com)
-- **Group Filtering**: Filter by OIDC groups (Tailscale cloud only, not Headscale)
+- **Group Filtering**: Filter by OIDC groups (supported in both Headscale and Tailscale cloud)
 - **User Filtering**: Allowlist specific users
 - **Email Verification**: Optional requirement for verified emails
 - **IdP Support**: Works with any OIDC provider (Google, Okta, Azure AD, Keycloak, etc.)
@@ -672,7 +672,7 @@ The combined Tailscale/Headscale system supports multiple authentication methods
 **Key Management:**
 
 - **MachineKey**: Generated on first run, persisted to disk, identifies machine to control server
-- **NodeKey**: Generated per session, distributed to peers for WireGuard tunnels
+- **NodeKey**: Persisted to disk, distributed to peers for WireGuard tunnels, can be manually rotated
 - **Key Validation**: MachineKey must match node association (prevents key reuse attacks)
 - **Stable Identity**: MachineKey provides persistent device identity across restarts
 
@@ -680,7 +680,7 @@ The combined Tailscale/Headscale system supports multiple authentication methods
 
 ### Enrollment Methods
 - [x] **Pre-authentication keys** - Headless/automated enrollment via reusable or ephemeral keys
-- [x] **OAuth/OIDC** - SSO integration with domain/user filtering (group filtering Tailscale cloud only)
+- [x] **OAuth/OIDC** - SSO integration with domain/user/group filtering (supported in both Headscale and Tailscale cloud)
 - [x] **Interactive login** - Browser-based authentication flow
 - [x] **CLI authentication** - Command-line auth flow supported
 
@@ -702,7 +702,7 @@ The combined Tailscale/Headscale system supports multiple authentication methods
 The Tailscale client (tailscaled) supports extensive platform coverage:
 
 **Desktop/Server Operating Systems:**
-- **Linux**: Full support (kernel WireGuard or userspace wireguard-go)
+- **Linux**: Full support (wireguard-go userspace only; kernel WireGuard is NOT used because magicsock must intercept all packets)
 - **macOS**: Full support (userspace wireguard-go, network extension)
 - **Windows**: Full support (userspace wireguard-go, WinTun driver)
 - **FreeBSD**: Full support (userspace wireguard-go)
@@ -721,16 +721,13 @@ The Tailscale client (tailscaled) supports extensive platform coverage:
 
 **Implementation Details:**
 
-**Kernel vs. Userspace WireGuard:**
+**WireGuard Implementation:**
 
-- **Linux**:
-  - Prefers kernel WireGuard module if available (better performance)
-  - Falls back to wireguard-go userspace if kernel module not available
-  - Can force userspace via environment variable
-
-- **All Other Platforms**:
-  - Uses wireguard-go userspace implementation
+- **All Platforms (including Linux)**:
+  - Always uses wireguard-go userspace implementation
   - Pure Go implementation (no kernel dependencies)
+  - Kernel WireGuard is NOT used because Tailscale's magicsock layer must intercept all WireGuard packets to handle endpoint selection, DERP relay, and disco protocol — this is incompatible with the kernel WireGuard module which sends packets directly via the kernel network stack
+  - Performance is compensated via UDP batching (recvmmsg/sendmmsg), GSO/GRO on the outer UDP socket, and 7 MB socket buffers
 
 **TUN Interface:**
 
@@ -781,7 +778,7 @@ Headscale control server is much simpler (control plane only):
 ## Platform Checklist
 
 ### Desktop/Server
-- [x] **Linux** - Full support (kernel WireGuard or userspace wireguard-go)
+- [x] **Linux** - Full support (wireguard-go userspace only)
 - [x] **macOS** - Full support (userspace wireguard-go)
 - [x] **Windows** - Full support (userspace wireguard-go + WinTun)
 - [x] **FreeBSD/OpenBSD** - BSD support (userspace wireguard-go)
@@ -791,6 +788,6 @@ Headscale control server is much simpler (control plane only):
 - [x] **Android** - Mobile app via VpnService API
 
 ### Implementation
-- [x] **Kernel-mode datapath** - Linux kernel WireGuard support (optional)
+- [ ] **Kernel-mode datapath** - NOT used; always wireguard-go userspace (magicsock requires packet interception incompatible with kernel WireGuard)
 - [x] **Userspace implementation** - wireguard-go runs entirely in userspace (all platforms)
 - [x] **Container support** - Docker/Kubernetes integration via containerboot and k8s-operator

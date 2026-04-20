@@ -29,7 +29,7 @@ Root servers (called "planets") facilitate peer discovery and NAT hole-punching.
 
 **Data Plane Communication:**
 
-Data packets are sent using VERB_FRAME (compressed MAC addresses) or VERB_EXT_FRAME (full MAC addresses) verbs. Each packet includes a 64-bit packet ID (used as crypto IV), source/destination ZeroTier addresses (5 bytes each), flags/cipher/hops byte, and a 64-bit MAC for authentication.
+Data packets are sent using VERB_FRAME (implicit MAC addresses derived from ZeroTier addresses) or VERB_EXT_FRAME (full MAC addresses) verbs. Each packet includes a 64-bit packet ID (used as crypto IV), source/destination ZeroTier addresses (5 bytes each), flags/cipher/hops byte, and a 64-bit MAC for authentication.
 
 Packets can be fragmented if they exceed the path MTU. The default MTU is 2800 bytes, with a conservative approach to avoid fragmentation issues.
 
@@ -139,7 +139,7 @@ On Linux, receive batching uses recvmmsg with 128 packets per call. However, sen
 
 ### Buffer Management
 - [x] **Buffer pool reuse** - Fixed static allocation with ring buffer reuse for RX queue
-- [ ] **Large UDP socket buffers** - Socket buffer configuration exists but passes 0 (unused), defaults to ~200KB
+- [x] **Large UDP socket buffers** - Configured to 1MB (ZT_UDP_DESIRED_BUF_SIZE = 1048576) via Binder.hpp
 
 ### Userspace TCP Stack (optional)
 - [ ] **Userspace TCP implementation** - Relies on kernel TCP
@@ -156,7 +156,7 @@ On Linux, receive batching uses recvmmsg with 128 packets per call. However, sen
 - [ ] **Path MTU discovery** - Fixed MTU, no dynamic discovery
 
 ### Peer Management
-- [x] **Lazy peer removal** - Peers expire after 243+ seconds
+- [x] **Lazy peer removal** - Paths expire after 243 seconds (ZT_PEER_PATH_EXPIRATION), peers timeout after 500 seconds (ZT_PEER_ACTIVITY_TIMEOUT)
 - [x] **Endpoint caching** - Caches paths and best endpoints
 - [x] **Efficient keepalive timers** - 60-second ping interval
 
@@ -166,11 +166,11 @@ On Linux, receive batching uses recvmmsg with 128 packets per call. However, sen
 
 ### State Synchronization
 - [x] **Delta updates** - Network configuration supports delta updates
-- [ ] **Compression** - No compression of control plane messages
+- [x] **Compression** - Control plane messages compressed with LZ4 (PUSH_DIRECT_PATHS, credentials, multicast, config requests)
 
 ### Data Plane Compression
-- [ ] **Tunnel compression** - No data packet compression (LZ4, LZO, Zlib)
-- [ ] **Configurable compression level** - Not supported
+- [x] **Tunnel compression** - Multicast data frames compressed with LZ4 via Packet::compress(); unicast frames (VERB_FRAME/VERB_EXT_FRAME) are not compressed; protocol supports compression on any packet via ZT_PROTO_VERB_FLAG_COMPRESSED
+- [ ] **Configurable compression level** - LZ4 fast mode only, not configurable
 
 # Security
 
@@ -431,7 +431,7 @@ ZeroTier runs on Linux, macOS, Windows, FreeBSD, OpenBSD, NetBSD, iOS, and Andro
 **Implementation Details:**
 
 - **Linux**: Full-featured with multi-threaded packet processing, uses TAP devices
-- **macOS**: Single-threaded, uses utun interfaces, full tunnel mode support
+- **macOS**: Single-threaded, uses feth (fake Ethernet) interfaces, full tunnel mode support
 - **Windows**: Single-threaded, uses custom TAP driver (TapDriver6), experimental ARM64 support (v1.12.0+)
 - **BSD**: Single-threaded, limited compared to Linux/macOS
 - **iOS/Android**: Mobile apps available in app stores with userspace implementations

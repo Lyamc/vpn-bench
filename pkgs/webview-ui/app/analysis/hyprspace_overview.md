@@ -140,10 +140,10 @@ Under 5% packet reordering and 2% packet loss conditions, Hyprspace performs sig
 - [ ] **Large UDP socket buffers** - Uses OS defaults (~200KB)
 
 ### Userspace TCP Stack (optional)
-- [x] **Userspace TCP implementation** - gVisor TCP stack for service network
-- [x] **Large TCP RX/TX buffers** - gVisor configured with multi-MB buffers
-- [ ] **Tuned congestion control** - Uses gVisor defaults
-- [ ] **Reordering tolerance** - Standard gVisor behavior
+- [x] **Userspace TCP implementation** - gVisor TCP stack used **only** for the in-VPN service-network feature (`svc/network.go`, `netstack/tun.go`). Regular tunnel traffic uses the host kernel's TCP stack on both ends: packets traverse a kernel TUN device (`tun/tun_linux.go`, `songgao/water`) and the forwarding loop in `node/node.go` only diverts a packet into gVisor when its destination falls inside the `fd00:hyprspsv::/80` service prefix and the L4 protocol is TCP. The gVisor TCP options below therefore apply to in-VPN service proxies, not to ordinary peer-to-peer flows.
+- [ ] **Large TCP RX/TX buffers** - No custom buffer configuration; inherits gVisor's stock 1 MiB defaults / 4 MiB max. Tailscale-style explicit overrides (8 MiB / 6 MiB) are not applied. Only affects the service-network path.
+- [ ] **Tuned congestion control** - No congestion control overrides; inherits gVisor's default Reno (which has a known integer overflow bug with CUBIC per gvisor/issues/11632, mitigated by the fact that Reno is still default). Only affects the service-network path.
+- [ ] **Reordering tolerance** - Inherits gVisor's default RACK loss-detection (`TCPRACKLossDetection`), which Tailscale found triggers spurious retransmits under reordering (tailscale/issues/9707) and explicitly disables. Hyprspace does not apply that workaround. Only affects the service-network path; ordinary tunnel flows are governed by the host kernel's TCP loss-detection settings.
 
 ### Receive Path
 - [ ] **TCP/packet coalescing on ingress** - No coalescing

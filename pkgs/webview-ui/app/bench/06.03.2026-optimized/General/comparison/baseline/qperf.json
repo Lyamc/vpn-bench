@@ -1,6 +1,16 @@
 {
     "status": "success",
     "data": {
+        "Headscale": {
+            "status": "error",
+            "error_type": "ClanError",
+            "error": {
+                "description": "list index out of range",
+                "msg": "Unexpected general Exception occured",
+                "location": "NoneType: None\n"
+            },
+            "machine": "0_lom"
+        },
         "Internal": {
             "status": "success",
             "data": {
@@ -45,16 +55,6 @@
                     }
                 }
             }
-        },
-        "Headscale": {
-            "status": "error",
-            "error_type": "ClanError",
-            "error": {
-                "description": "list index out of range",
-                "msg": "Unexpected general Exception occured",
-                "location": "NoneType: None\n"
-            },
-            "machine": "0_lom"
         }
     }
 }
