@@ -96,7 +96,7 @@ VpnCloud scores below are for [Lyamc/vpncloud](https://github.com/Lyamc/vpncloud
 | Feature | EasyTier | Tailscale | Hyprspace | Mycelium | Nebula | Tinc | VpnCloud | Yggdrasil | ZeroTier |
 |---------|----------|-----------|-----------|----------|--------|------|----------|-----------|----------|
 | UDP GSO | ✗ | ✓ | ✗ | ✗ | ✗ | ✗ | ✓ | ✗ | ✗ |
-| UDP GRO | ✗ | ✓ | ✗ | ✗ | ✗ | ✗ | ✗ | ✗ | ✗ |
+| UDP GRO | ✗ | ✓ | ✗ | ✗ | ✗ | ✗ | ✓ | ✗ | ✗ |
 
 ### Buffer Management
 
@@ -332,7 +332,7 @@ VpnCloud scores below are for [Lyamc/vpncloud](https://github.com/Lyamc/vpncloud
 | **Mycelium** | 4/13 | 4/10 | 4/22 | 2/11 | 4/13 | 6/10 | 6/8 | 3/12 | 6/9 | **39/108** |
 | **Nebula** | 5/13 | 8/10 | 12/22 | 8/11 | 8/13 | 8/10 | 7/8 | 5/12 | 8/9 | **69/108** |
 | **Tinc** | 9/13 | 7/10 | 11/22 | 3/11 | 4/13 | 7/10 | 8/8 | 5/12 | 7/9 | **61/108** |
-| **VpnCloud** | 10/13 | 9/10 | 11/22 | 8/11 | 9/13 | 7/10 | 6/8 | 5/12 | 8/9 | **73/108** |
+| **VpnCloud** | 10/13 | 9/10 | 12/22 | 8/11 | 9/13 | 7/10 | 6/8 | 5/12 | 8/9 | **74/108** |
 | **Yggdrasil** | 5/13 | 5/10 | 7/22 | 3/11 | 1/13 | 2/10 | 7/8 | 4/12 | 8/9 | **42/108** |
 | **ZeroTier** | 10/13 | 5/10 | 11/22 | 7/11 | 11/13 | 5/10 | 6/8 | 7/12 | 9/9 | **71/108** |
 

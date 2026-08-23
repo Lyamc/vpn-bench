@@ -162,7 +162,7 @@ The event loop handles:
 
 ### UDP Offload
 - [x] **UDP GSO (Generic Segmentation Offload)** - Linux `UDP_SEGMENT` when a send batch shares dest and size
-- [ ] **UDP GRO (Generic Receive Offload)** - Not implemented
+- [x] **UDP GRO (Generic Receive Offload)** - Linux UDP_GRO; recvmmsg splits coalesced datagrams via the UDP_GRO cmsg
 
 ### Buffer Management
 - [x] **Buffer pool reuse** - Single reusable MsgBuffer (65KB fixed buffer) allocated at loop start
